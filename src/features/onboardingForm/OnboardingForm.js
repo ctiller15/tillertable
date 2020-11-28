@@ -1,6 +1,9 @@
 import { FormControl, Select, MenuItem, TextField, InputLabel, Button, Box } from '@material-ui/core'
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { saveStockholdersAsync } from '../stockholders/stockholderSlice';
 import { StockFormSection } from './StockFormSection';
+import { useHistory } from 'react-router-dom';
 
 export const OnboardingForm = (props) => {
 	const stock = {
@@ -16,6 +19,8 @@ export const OnboardingForm = (props) => {
 		stocks: [{...stock}]
 	}
 
+	const dispatch = useDispatch();
+
 	const generateEmptyRow = () => {
 		return {
 			name: '',
@@ -25,6 +30,8 @@ export const OnboardingForm = (props) => {
 	}
 
 	const [rows, updateRows] = useState([emptyRow]);
+
+	const history = useHistory();
 
 	const addInvestorRow = () => {
 		const tempRows = [...rows];
@@ -168,7 +175,7 @@ export const OnboardingForm = (props) => {
 			});
 		}
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		const data = new FormData(e.target);
@@ -176,7 +183,9 @@ export const OnboardingForm = (props) => {
 			console.log(item);
 		}
 
-		console.log("Submitted!");
+		await dispatch(saveStockholdersAsync(rows));
+
+		history.push('/dashboard');
 	}
 
 	return (

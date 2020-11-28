@@ -5,6 +5,7 @@ import { Button } from '@material-ui/core';
 
 import { OnboardingForm } from './features/onboardingForm/OnboardingForm';
 import { HomePage } from './features/homePage/HomePage';
+import { Dashboard } from './features/dashboard/Dashboard';
 
 import { 
 	BrowserRouter as Router,
@@ -23,7 +24,7 @@ function App() {
 					<OnboardingForm />
 				</Route>
 				<Route path="/dashboard">
-					<h1>user dashboard</h1>
+					<Dashboard />
 				</Route>
 				<Route path="/">
 					<HomePage />
