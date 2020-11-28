@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux'
-import { selectStockHolders } from '../stockholders/stockholderSlice'
+import { selectStockHolders, selectOwnership } from '../stockholders/stockholderSlice'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Grid, Switch, Collapse, Typography, IconButton } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import { VictoryPie } from 'victory';
 
 
 export const Dashboard = (props) => {
 
-	const [ displayStocks, setStockDisplay ] = useState(false)
 	const stockholders = useSelector(selectStockHolders);
+	const ownershipData = useSelector(selectOwnership);
 
+	const [ categoryToggleOn, toggleCategory ] = useState(false)
+	const togglePieChart = (e) => {
+		e.preventDefault();
+		toggleCategory(!categoryToggleOn);
+	}
+
+	console.log(ownershipData);
 /*	const stockholdersDisplay = stockholders.map((row) => {
 		
 	})
@@ -107,7 +115,14 @@ export const Dashboard = (props) => {
 			</TableContainer>
 				</Grid>
 				<Grid item md={8}>
-					<h2>Stock data, graph</h2>
+					<h2>graph</h2>
+					<Switch 
+						checked={categoryToggleOn}
+						onChange={togglePieChart}
+					/>
+					<VictoryPie 
+						data={categoryToggleOn ? ownershipData.category : ownershipData.individual}
+					/>
 				</Grid>
 			</Grid>
 		</section>

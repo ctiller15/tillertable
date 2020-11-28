@@ -1,4 +1,5 @@
 import Api from '../../app/api';
+import { calculateOwnership } from '../../app/utils';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 export const saveStockholdersAsync = createAsyncThunk('stockHolders/saveStockholders', async (stockHoldersData) => {
@@ -10,6 +11,7 @@ export const stockholderSlice = createSlice({
   name: 'stockholder',
   initialState: {
     stockholders: [],
+	ownership: {},
   },
   reducers: {
 	
@@ -32,6 +34,7 @@ export const stockholderSlice = createSlice({
 		[saveStockholdersAsync.fulfilled]: (state, action) => {
 			console.log(action);
 			state.stockholders = state.stockholders.concat(action.payload);
+			state.ownership = calculateOwnership(action.payload);
 		}
 	}
 });
@@ -54,6 +57,7 @@ export const stockholderSlice = createSlice({
 // in the slice file. For example: `useSelector((state) => state.counter.value)`
 //export const selectCount = state => state.counter.value;
 export const selectStockHolders = state => state.stockholder.stockholders;
+export const selectOwnership = state => state.stockholder.ownership;
 
 export default stockholderSlice.reducer;
 
