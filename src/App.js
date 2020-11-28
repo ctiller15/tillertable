@@ -1,7 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
-//import { Counter } from './features/counter/Counter';
-import { Button } from '@material-ui/core';
+import { Button, AppBar, Toolbar } from '@material-ui/core';
 
 import { OnboardingForm } from './features/onboardingForm/OnboardingForm';
 import { HomePage } from './features/homePage/HomePage';
@@ -19,6 +18,11 @@ function App() {
   return (
 	  <Router>
 		<div className="App">
+			<AppBar position="static">
+				<Toolbar>
+					<Button color="inherit">Sign up</Button>
+				</Toolbar>
+			</AppBar>
 			<Switch>
 				<Route path="/onboarding">
 					<OnboardingForm />
