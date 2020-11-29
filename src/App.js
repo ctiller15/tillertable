@@ -20,7 +20,7 @@ function App() {
 		<div className="App">
 			<AppBar position="static">
 				<Toolbar>
-					<Button color="inherit">Sign up</Button>
+					<Button component={RouterLink} to="/onboarding" color="inherit">Sign up</Button>
 				</Toolbar>
 			</AppBar>
 			<Switch>

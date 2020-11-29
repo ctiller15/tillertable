@@ -1,24 +1,32 @@
-import { Box, FormControl, TextField, Button, IconButton } from '@material-ui/core';
+import { Box, FormControl, TextField, Button, IconButton, Grid } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 export const StockFormSection = (props) => {
 
 	return (
-	<Box
+	<Grid
+		spacing={2}
+		container
 		component="div"
 		key={props.stockInd}
-		display="flex"
-		flexDirection="row"
 	>
-		<FormControl>
+		<Grid container item spacing={2} md={10}>
+		<Grid 
+			component={FormControl}
+			item
+			md={6}>
 			<TextField
 				label="title"
 				name={`stock[${props.ind}][${props.stockInd}]`}
 				value={props.stockUnit.title}
 				onChange={(e) => props.updateStockTitle(e, props.ind, props.stockInd)}
 			/>
-		</FormControl>
-		<FormControl>
+		</Grid>
+		<Grid
+			component={FormControl}
+			item
+			md={6}
+		>
 			<TextField 
 				label="stock count"
 				type="number"
@@ -26,8 +34,11 @@ export const StockFormSection = (props) => {
 				value={props.stockUnit.count}
 				onChange={(e) => props.updateStockCount(e, props.ind, props.stockInd)}
 			/>
-		</FormControl>
-		<FormControl>
+		</Grid>
+		<Grid
+			component={FormControl}
+			item
+			md={6}>
 			<TextField 
 				label="stock value"
 				type="number"
@@ -35,21 +46,30 @@ export const StockFormSection = (props) => {
 				value={props.stockUnit.value}
 				onChange={(e) => props.updateStockValue(e, props.ind, props.stockInd)}
 			/>
-		</FormControl>
-		<FormControl>
+		</Grid>
+		<Grid
+			component={FormControl}
+			item
+			md={6}>
 			<TextField 
 				label="date"
 				type="date"
 				name={`stockdate[${props.ind}][${props.stockInd}]`}
 				value={props.stockUnit.date}
 				onChange={(e) => props.updateStockDate(e, props.ind, props.stockInd)}
+				InputLabelProps={{
+					shrink: true,
+				}}
 			/>
-		</FormControl>
-		<IconButton
-			onClick={(e) => props.removeStock(e, props.ind, props.stockInd)}
-		>
-			<DeleteIcon />
-		</IconButton>
-	</Box>
+		</Grid>
+		</Grid>
+		<Grid item md={2}>
+			<IconButton
+				onClick={(e) => props.removeStock(e, props.ind, props.stockInd)}
+			>
+				<DeleteIcon />
+			</IconButton>
+		</Grid>
+	</Grid>
 	)
 }

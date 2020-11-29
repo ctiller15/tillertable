@@ -1,9 +1,12 @@
-import { FormControl, Select, MenuItem, TextField, InputLabel, Button, Box } from '@material-ui/core'
+import { FormControl, Select, MenuItem, TextField, InputLabel, Button, Box, Accordion, AccordionSummary, AccordionDetails, Grid, IconButton } from '@material-ui/core'
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { saveStockholdersAsync } from '../stockholders/stockholderSlice';
 import { StockFormSection } from './StockFormSection';
 import { useHistory } from 'react-router-dom';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 
 export const OnboardingForm = (props) => {
 	const stock = {
@@ -122,28 +125,46 @@ export const OnboardingForm = (props) => {
 					flexDirection="row"
 					justifyContent="center"
 				>
-					<FormControl>
-						<TextField
-							id={`stockholder-name${ind}`}
-							label="name"
-							name={`stockholder-name${ind}`}
-							value={row.name}
-							onChange={(e) => updateName(e, row, ind)}
-						/>
-					</FormControl>
+					<Grid 
+						item 
+						md={6} 
+						component={Accordion} 
+						id={`stockholder-accordion-${ind}`}>
+						<Grid 
+							container 
+							component={AccordionSummary}
+							expandIcon={<ExpandMoreIcon />}>
+							<Grid 
+								item 
+								component={FormControl} 
+								md={4}>
+								<TextField
+									id={`stockholder-name${ind}`}
+									label="name"
+									name={`stockholder-name${ind}`}
+									value={row.name}
+									onClick={(event) => event.stopPropagation()}
+									onFocus={(event) => event.stopPropagation()}
+									onChange={(e) => updateName(e, row, ind)}
+								/>
+							</Grid>
 
-					<FormControl>
-						<InputLabel>Role</InputLabel>
-						<Select
-							name={`role${ind}`}
-							value={row.role}
-							onChange={(e) => updateRole(e, row, ind)}
-						>
-							<MenuItem value="founder">Founder</MenuItem>
-							<MenuItem value="investor">Investor</MenuItem>
-							<MenuItem value="employee">Employee</MenuItem>
-						</Select>
-					</FormControl>
+							<Grid item component={FormControl} md={4}>
+								<InputLabel>Role</InputLabel>
+								<Select
+									name={`role${ind}`}
+									value={row.role}
+									onClick={(event) => event.stopPropagation()}
+									onFocus={(event) => event.stopPropagation()}
+									onChange={(e) => updateRole(e, row, ind)}
+								>
+									<MenuItem value="founder">Founder</MenuItem>
+									<MenuItem value="investor">Investor</MenuItem>
+									<MenuItem value="employee">Employee</MenuItem>
+								</Select>
+							</Grid>
+						</Grid>
+						<AccordionDetails>
 					<Box 
 						component="ul"
 						display="flex"
@@ -152,7 +173,8 @@ export const OnboardingForm = (props) => {
 						<h2>Stock details</h2>
 						{
 							row.stocks.map((stockUnit, stockInd) => {
-								return <StockFormSection 
+								return  <React.Fragment >	
+								<StockFormSection 
 									key={`stock-${ind}-${stockInd}`}	
 									ind={ind}
 										stockInd={stockInd}
@@ -163,13 +185,22 @@ export const OnboardingForm = (props) => {
 										updateStockCount={updateStockCount}
 										updateStockValue={updateStockValue}
 									/>
+									<hr />
+									</React.Fragment>
 							})
 						}
-						<Button
+						<IconButton
 							onClick={(e) => addStockRow(e, ind)}
-						>Add stock</Button>
+						>
+							<AddCircleRoundedIcon />
+						</IconButton>
 					</Box>
-					<Button onClick={(e) => removeStockHolder(e, ind)}>Remove StockHolder</Button>
+						</AccordionDetails>
+					</Grid>
+					<IconButton 
+						onClick={(e) => removeStockHolder(e, ind)}>
+						<DeleteIcon />
+					</IconButton>
 				</Box>
 			)
 			});
@@ -195,20 +226,30 @@ export const OnboardingForm = (props) => {
 			component="form"
 			onSubmit={handleSubmit}
 			display="flex"
-			flexDirection="column">
+			flexDirection="column"
+			className="onboardingForm"
+			alignItems="center"
+		>
 			{/*Note, none of the fields as of right now have any custom validation.
 
 				The following is still needed:
 				- Numeric validation for stock count.
 				- Numeric validation with decimals for stock value
 			*/}
+				<h3>Tell us a bit about your stockholders!</h3>
+				<p>Don't worry, you can change this later.</p>
 			<ul>
 				{rowsDisplay()}
 			</ul>
-			<Button onClick={addInvestorRow}>Add StockHolder</Button>
+			<IconButton 
+				onClick={addInvestorRow}>
+				<AddCircleRoundedIcon />
+			</IconButton>
 			<Button
 				type="submit"
 				value="Submit"
+				variant="contained"
+				color="primary"
 			>Sign up</Button>
 		</Box>
 	)
