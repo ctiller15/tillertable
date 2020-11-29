@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import {Grid } from '@material-ui/core';
+import { Box , Grid, Button } from '@material-ui/core';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import MonetizationOnOutlinedIcon from '@material-ui/icons/MonetizationOnOutlined';
 import EqualizerOutlinedIcon from '@material-ui/icons/EqualizerOutlined';
@@ -9,16 +9,16 @@ import Carousel from 'react-material-ui-carousel';
 export const HomePage = (props) => {
 	const userData = [
 		{
-			name: "Person 1",
-			text: "Lorem ipsum"
+			name: "Chelsy Horne",
+			text: "\"Since I started using Tillertable it's been really easy to keep track of what's going on.\""
 		},
 		{
-			name: "Person 2",
-			text: "Lorem ipsum"
+			name: "Kalvin Andrews",
+			text: "\"I'll say I've used a ton of tabling software. This is by far the best with zero competition. Absolutely none.\""
 		},
 		{
-			name: "Person 3",
-			text: "Lorem ipsum"
+			name: "Willie Boyce",
+			text: "\"You won't believe that it was only made in two days!\""
 		},
 	];
 
@@ -69,23 +69,26 @@ export const HomePage = (props) => {
 
 				<Carousel>
 					{
-						userData.map( (item, ind) => (<div key={ind}>
+						userData.map( (item, ind) => (<Box key={ind} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
 							<h2>{item.name}</h2>
 							<p>{item.text}</p>
-						</div>))
+						</Box>))
 					}
 				</Carousel>
-
-				<p>"Since I started using Tillertable it's been really easy to keep track of what's going on.</p>
-
-				<p>"I'll say I've used a ton of tabling software. This is by far the best with zero competition. Absolutely none."</p>
-
-				<p>"You won't believe that it was only made in two days!"</p>
 			</section>
 
-			<RouterLink to="/onboarding">Try it now</RouterLink>
-		
-			<section></section>
+			<Box display="flex"
+				flexDirection="column"
+				justifyContent="center"
+				alignItems="center"
+				className="call-to-action">
+				<p>Change your captabling experience forever.</p>
+				<Button component={RouterLink} to="/onboarding" variant="contained" color="primary">Try it now</Button>
+			</Box>
+
+			<Box display="flex" flexDirection="column" alignItems="center" className="footer">
+				<p>App created by Christopher Tiller</p>
+			</Box>
 
 		</React.Fragment>
 	)

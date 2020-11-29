@@ -41,6 +41,28 @@
 	align-items: center;
 }
 
+.App .testimonials {
+	height: 300px;
+}
+
+.App .CarouselItem {
+	height: 200px;
+}
+
+.App .call-to-action {
+	height: 200px;
+}
+
+.App .footer {
+	height: 300px;
+	background-color: #000000;
+	color: #FFFFFF;
+}
+
+.App .footer p {
+	text-align: center;
+}
+
 .App p {
 	max-width: 500px;
 	font-size: 1.5em;
