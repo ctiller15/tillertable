@@ -124,13 +124,6 @@ export const HomePage = (props) => {
 					variant="contained" 
 					color="primary">Try it now</Button>
 			</Box>
-			<Box 
-				display="flex" 
-				flexDirection="column" 
-				alignItems="center" 
-				className="footer">
-				<p>App created by Christopher Tiller</p>
-			</Box>
 		</React.Fragment>
 	)
 }

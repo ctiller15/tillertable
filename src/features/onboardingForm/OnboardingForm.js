@@ -1,14 +1,27 @@
 import { FormControl, Select, MenuItem, TextField, InputLabel, Button, Box, Accordion, AccordionSummary, AccordionDetails, Grid, IconButton } from '@material-ui/core'
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { saveStockholdersAsync } from '../stockholders/stockholderSlice';
+import { logUserIn } from '../users/userSlice';
 import { StockFormSection } from './StockFormSection';
 import { useHistory } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+	root: {
+		background: 'rgb(237, 96, 100)',
+		borderRadius: '2px'
+	},
+});
+
+
 export const OnboardingForm = (props) => {
+	const buttonClasses = useStyles();
+	
 	// move these in a separate class. They're reused in at least three different places.
 	const stock = {
 		title: '',
@@ -217,6 +230,7 @@ export const OnboardingForm = (props) => {
 		}
 
 		await dispatch(saveStockholdersAsync(rows));
+		await dispatch(logUserIn());
 
 		history.push('/dashboard');
 	}
@@ -248,10 +262,14 @@ export const OnboardingForm = (props) => {
 				<AddCircleRoundedIcon />
 			</IconButton>
 			<Button
+				classes={{
+					root: buttonClasses.root,
+				}}
 				type="submit"
 				value="Submit"
 				variant="contained"
 				color="primary"
+				size="large"
 			>Sign up</Button>
 		</Box>
 	)
