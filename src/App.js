@@ -20,7 +20,11 @@ function App() {
 		<div className="App">
 			<AppBar position="static">
 				<Toolbar>
-					<Button component={RouterLink} to="/onboarding" color="inherit">Sign up</Button>
+					{/*Need to update navbar to create a dashboard link if user is "logged in". Need to update redux store to account for user state. Also need home link. See if you have time to add that.*/}
+					<Button 
+						component={RouterLink} 
+						to="/onboarding" 
+						color="inherit">Sign up</Button>
 				</Toolbar>
 			</AppBar>
 			<Switch>
@@ -35,6 +39,7 @@ function App() {
 				</Route>
 			</Switch>
 
+			{/*Move the footer from the home page component and put it here. No reason not to have it across all pages.*/}
 		</div>
 	  </Router>
   );

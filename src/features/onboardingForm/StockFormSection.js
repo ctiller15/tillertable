@@ -1,4 +1,4 @@
-import { Box, FormControl, TextField, Button, IconButton, Grid } from '@material-ui/core';
+import { FormControl, TextField, IconButton, Grid } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 export const StockFormSection = (props) => {

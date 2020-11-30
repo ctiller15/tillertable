@@ -44,24 +44,40 @@ export const HomePage = (props) => {
 
 				<p>With Tillertable you can view all of your individual shareholders and visualize their stake in the company. You get exactly what you need.</p>
 
-				<Grid component="section" container className="features">
-					<Grid component="section" item xs={12} md={4}>
+				<Grid 
+					component="section" 
+					container 
+					className="features">
+					<Grid 
+						component="section" 
+						item 
+						xs={12} 
+						md={4}>
 						<h3>Add equity</h3>
-						<MonetizationOnOutlinedIcon style={{fontSize: 100}}/>
+						<MonetizationOnOutlinedIcon 
+							style={{fontSize: 100}}/>
 						<p>Whether a investor, founder, or employee, we've got all your holders covered.</p>
 					</Grid>
-					<Grid component="section" item xs={12} md={4}>
-						<h3>Adjust</h3>
-						<EditOutlinedIcon style={{fontSize: 100}}/>
-						<p>Things change. We get that. That's why you can edit any parameter you want. Made a typo? No worries.</p>
+					<Grid 
+						component="section" 
+						item 
+						xs={12} 
+						md={4}>
+							<h3>Adjust</h3>
+							<EditOutlinedIcon style={{fontSize: 100}}/>
+							<p>Things change. We get that. That's why you can edit any parameter you want. Made a typo? No worries.</p>
 					</Grid>
-					<Grid component="section" item xs={12} md={4}>
-						<h3>Visualize</h3>
-						<EqualizerOutlinedIcon style={{fontSize: 100}} />
-						<p>Curious about how much stake your investors have? We've got you covered with powerful visualizations down to the individual person.</p>
+					<Grid 
+						component="section" 
+						item 
+						xs={12} 
+						md={4}>
+							<h3>Visualize</h3>
+								<EqualizerOutlinedIcon 
+									style={{fontSize: 100}} />
+							<p>Curious about how much stake your investors have? We've got you covered with powerful visualizations down to the individual person.</p>
 					</Grid>
 				</Grid>
-
 			</section>
 
 			<section className="testimonials">
@@ -69,27 +85,38 @@ export const HomePage = (props) => {
 
 				<Carousel>
 					{
-						userData.map( (item, ind) => (<Box key={ind} display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-							<h2>{item.name}</h2>
-							<p>{item.text}</p>
-						</Box>))
+						userData.map( (item, ind) => (
+							<Box 
+								key={ind} 
+								display="flex" 
+								flexDirection="column" justifyContent="center" alignItems="center">
+								<h2>{item.name}</h2>
+								<p>{item.text}</p>
+							</Box>))
 					}
 				</Carousel>
 			</section>
 
-			<Box display="flex"
+			<Box 
+				display="flex"
 				flexDirection="column"
 				justifyContent="center"
 				alignItems="center"
 				className="call-to-action">
 				<p>Change your captabling experience forever.</p>
-				<Button component={RouterLink} to="/onboarding" variant="contained" color="primary">Try it now</Button>
+				<Button 
+					component={RouterLink} 
+					to="/onboarding" 
+					variant="contained" 
+					color="primary">Try it now</Button>
 			</Box>
-
-			<Box display="flex" flexDirection="column" alignItems="center" className="footer">
+			<Box 
+				display="flex" 
+				flexDirection="column" 
+				alignItems="center" 
+				className="footer">
 				<p>App created by Christopher Tiller</p>
 			</Box>
-
 		</React.Fragment>
 	)
 }

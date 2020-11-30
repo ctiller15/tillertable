@@ -9,6 +9,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 
 export const OnboardingForm = (props) => {
+	// move these in a separate class. They're reused in at least three different places.
 	const stock = {
 		title: '',
 		count: 0,
@@ -36,6 +37,7 @@ export const OnboardingForm = (props) => {
 
 	const history = useHistory();
 
+	// Not sure what I was thinking. Refactor all of these.
 	const addInvestorRow = () => {
 		const tempRows = [...rows];
 		tempRows.push(generateEmptyRow());
