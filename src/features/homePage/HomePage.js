@@ -5,6 +5,7 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import MonetizationOnOutlinedIcon from '@material-ui/icons/MonetizationOnOutlined';
 import EqualizerOutlinedIcon from '@material-ui/icons/EqualizerOutlined';
 import Carousel from 'react-material-ui-carousel';
+import { makeStyles } from '@material-ui/core/styles';
 
 export const HomePage = (props) => {
 	const userData = [
@@ -21,6 +22,15 @@ export const HomePage = (props) => {
 			text: "\"You won't believe that it was only made in two days!\""
 		},
 	];
+
+	const useStyles = makeStyles({
+		root: {
+			background: 'rgb(237, 96, 100)',
+			borderRadius: '2px'
+		},
+	});
+
+	const buttonClasses = useStyles();
 
 	return (
 		<React.Fragment>
@@ -105,6 +115,10 @@ export const HomePage = (props) => {
 				className="call-to-action">
 				<p>Change your captabling experience forever.</p>
 				<Button 
+					classes={{
+						root: buttonClasses.root,
+					}}
+					size="large"
 					component={RouterLink} 
 					to="/onboarding" 
 					variant="contained" 

@@ -55,7 +55,7 @@
 
 .App .footer {
 	height: 300px;
-	background-color: #000000;
+	background-color: rgb(40, 40, 40);
 	color: #FFFFFF;
 }
 
@@ -78,6 +78,10 @@
 	height: 0;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 	border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.MuiAppBar-colorPrimary {
+	background-color: rgb(40, 40, 40);
 }
 
 @media (prefers-reduced-motion: no-preference) {
