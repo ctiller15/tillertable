@@ -5,7 +5,7 @@ import { selectStockHolders, selectOwnership, addStockholderAsync, getStockholde
 import { Table, TableBody, TableCell, TableHead, TableRow, Paper, Grid, Switch, Collapse, Typography, IconButton, Button, Box, TextField, Select, MenuItem, Input } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { VictoryPie } from 'victory';
+import { VictoryPie, VictoryContainer } from 'victory';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 
 // Icons
@@ -193,7 +193,7 @@ export const Dashboard = (props) => {
 
 	return (
 
-		<section>
+		<section className="dashboard">
 			<h1>User Dashboard</h1>
 			<Grid container spacing={0}>
 				<Grid item md={4}>
@@ -351,30 +351,24 @@ export const Dashboard = (props) => {
 		</Table>
 	</Paper>
 </Grid>
-	<Grid item md={6}
-		display="flex"
-		flexDirection="column"
-	>
-		<h2>graph</h2>
+		<Grid item md={1}></Grid>
+				<Grid container item md={7}>
 
-		<Box component="section"
-			display="flex"
-			flexDirection="row"
-			justifyContent="flex-start">
-			<section>
-			<span>Show graph by role</span>
-			<Switch 
-				checked={categoryToggleOn}
-				onChange={togglePieChart}
-			/>
-			</section>
-			<VictoryPie 
+			<Grid item component={VictoryPie}
+				md={9}
+				containerComponent={<VictoryContainer responsive={false}/> }
 				colorScale="qualitative"
 				data={categoryToggleOn ? ownershipData.category : ownershipData.individual}
-				width={200}
-				height={200}
 			/>
-			</Box>
+				<Grid item component="section"
+					md={3}>
+					<h3>Options</h3>
+				<span>Show graph by role</span>
+				<Switch 
+					checked={categoryToggleOn}
+					onChange={togglePieChart}
+				/>
+			</Grid>
 		</Grid>
 	</Grid>
 </section>

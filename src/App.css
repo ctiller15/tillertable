@@ -55,7 +55,7 @@
 }
 
 .App .footer {
-	height: 300px;
+	height: 100px;
 	background-color: rgb(40, 40, 40);
 	color: #FFFFFF;
 }
@@ -86,6 +86,10 @@
 }
 
 .App .onboardingForm {
+	flex-grow: 1;
+}
+
+.App .dashboard {
 	flex-grow: 1;
 }
 
