@@ -22,9 +22,9 @@ export const getStockholderData = createAsyncThunk('stockholders/getStockholderD
 	return response;
 });
 
-export const updateStockRow = createAsyncThunk('stockHolders/updateStocks', async(payload) => {
-	payload.row.isEditMode = false;
-	const response = await Api.updateStockRow('stockholderdata', payload.row, payload.ind);
+export const updateStockRow = createAsyncThunk('stockHolders/updateStocks', async(row) => {
+	row.isEditMode = false;
+	const response = await Api.updateStockRow('stockholderdata', row);
 	return response;
 });
 

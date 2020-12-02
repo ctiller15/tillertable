@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 import { selectStockHolders, selectOwnership, addStockholderAsync, getStockholderData, addStockAsync, updateStockRow } from '../stockholders/stockholderSlice'
-import { Table, TableBody, TableCell, TableHead, TableRow, Paper, Grid, Switch, Collapse, Typography, IconButton, Button, Box, TextField, Select, MenuItem, Input } from '@material-ui/core';
+import { Table, TableBody, TableCell, TableHead, TableRow, Paper, Grid, Switch, Collapse, Typography, IconButton, Button, Box, TextField, Select, MenuItem, Input, TableSortLabel } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { VictoryPie, VictoryContainer } from 'victory';
@@ -34,7 +34,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-	const CustomTableCell = ({ row, name, onChange, ind }) => {
+	const CustomTableCell = ({ row, name, onChange}) => {
 	  const classes = useStyles();
 	  const { isEditMode } = row;
 	  return (
@@ -44,7 +44,7 @@ const useStyles = makeStyles(theme => ({
 			<Input
 			  value={row[name]}
 			  name={name}
-			  onChange={e => onChange(e, row, ind)}
+			  onChange={e => onChange(e, row)}
 			  className={classes.input}
 			/>
 		  ) : (
@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
 	  );
 	};
 
-const CustomRoleTableCell = ({ row, name, onChange, ind}) => {
+const CustomRoleTableCell = ({ row, name, onChange}) => {
 	  const classes = useStyles();
 	  const { isEditMode } = row;
 	  return (
@@ -64,7 +64,7 @@ const CustomRoleTableCell = ({ row, name, onChange, ind}) => {
 							<Select 
 								value={row.role}
 								name={name}
-								onChange={e => onChange(e, row ,ind)}
+								onChange={e => onChange(e, row)}
 								className={classes.input}
 						>
 								<MenuItem value="founder">Founder</MenuItem>
@@ -77,10 +77,82 @@ const CustomRoleTableCell = ({ row, name, onChange, ind}) => {
 	  );
 	};
 
+	const headCells = [
+		{ id: 'name', numeric: false, label: 'Name'},
+		{ id: 'role', numeric: false, label: 'Role'}
+	];
+
+	const headStockCells = [
+		{ id: 'title', numeric: false, label: 'Title'},
+		{ id: 'count', numeric: true, label: 'Count'},
+		{ id: 'value', numeric: true, label: 'Value'},
+		{ id: 'date', numeric: false, label: 'Date'}
+	];
+
+	const descendingComparator = (a, b, orderBy) => {
+		console.log(a, b, orderBy, a[orderBy], b[orderBy]);
+		if (b[orderBy] < a[orderBy]) {
+			return -1;
+		}
+		if (b[orderBy] > a[orderBy]) {
+			return 1;
+		}
+		return 0;
+	}
+
+	const getComparator = (order, orderBy) => {
+		return order === 'desc'
+			? (a, b) => descendingComparator(a, b, orderBy)
+			: (a, b) => -descendingComparator(a, b, orderBy);
+	}
+
+	const EnhancedTableHead = (props) => {
+		const { order, orderBy, onRequestSort, skipFirst, headCellsSet, type, stockholderRow } = props;
+		const createSortHandler = (property) => (event) => {
+			if(type !== 'stock') {
+				onRequestSort(event, property);
+			} else {
+				onRequestSort(event, property, stockholderRow, true);
+			}
+		};
+
+		return (
+			<TableHead>
+				<TableRow>
+					<React.Fragment>
+
+						{ skipFirst ? <TableCell></TableCell> : null}
+					{
+						headCellsSet.map((headCell) => (
+							<TableCell
+								key={headCell.id}
+								align={headCell.numeric ? 'right' : 'left'}
+								sortDirection={orderBy === headCell.id ? order : false }
+							>
+								<TableSortLabel
+									active={orderBy === headCell.id}
+									direction={orderBy === headCell.id ? order : 'asc'}
+									onClick={createSortHandler(headCell.id)}
+								>
+									{headCell.label}
+								</TableSortLabel>
+							</TableCell>
+						))
+					}
+					</React.Fragment>
+				</TableRow>
+			</TableHead>
+		);
+	}
+
 export const Dashboard = (props) => {
 
 	const [ previous, setPrevious ] = React.useState({});
 	const [ categoryToggleOn, toggleCategory ] = useState(false)
+
+	const [ order, setOrder] = React.useState('asc');
+	const [ orderBy, setOrderBy] = React.useState('name');
+
 	const dispatch = useDispatch();
 
 	const classes = useStyles();
@@ -90,18 +162,20 @@ export const Dashboard = (props) => {
 			...item,
 			isEditMode: false,
 			isRowOpen: false,
+			order: 'asc',
+			orderBy: 'title'
 		}));
 
 	const ownershipData = useSelector(selectOwnership);
 
 	const [stockholdersData, setStockholdersData] = useState(stockholders);
 
-	const onToggleEditMode = (ind) => {
+	const onToggleEditMode = (rowId) => {
 		setStockholdersData(state => {
-			return stockholdersData.map((row, rowInd) => {
-				if (rowInd === ind) {
+			return stockholdersData.map((row) => {
+				if (row.uniqueId === rowId) {
 					if(row.isEditMode){
-						updateStockholdersRow(row, ind);
+						updateStockholdersRow(row);
 						return { ...row, isEditMode: false }	
 					}
 					return { ...row, isEditMode: true };
@@ -120,25 +194,27 @@ export const Dashboard = (props) => {
 				...item,
 				isEditMode: false,
 				isRowOpen: false,
+				order: 'asc',
+				orderBy: 'title'
 			}
 		));
 
-			setStockholdersData(fetchedStockholders);
+			setStockholdersData(stableSort(fetchedStockholders, getComparator(order, orderBy)))
+
 		}
 
 		fetchData();
 
-	}, [dispatch]);
+	}, [dispatch, order, orderBy]);
 
 	const togglePieChart = (e) => {
 		e.preventDefault();
 		toggleCategory(!categoryToggleOn);
 	}
 
-	const updateStockholdersRow = async (row, ind) => {
-		const payload = {row, ind}
-		const response = await dispatch(updateStockRow(payload));
-		setStockholdersData(response.payload);
+	const updateStockholdersRow = async (row) => {
+		const response = await dispatch(updateStockRow(row));
+		setStockholdersData(stableSort(response.payload, getComparator(order, orderBy)));
 	}
 
 	const addStockholderTableRow = async (e) => {
@@ -174,22 +250,87 @@ export const Dashboard = (props) => {
 		setStockholdersData(newRows);
 	}
 
-  const onChange = (e, row, ind) => {
+  const onChange = (e, row) => {
     if (!previous[row.id]) {
       setPrevious(state => ({ ...state, [row.id]: row }));
     }
 
     const value = e.target.value;
     const name = e.target.name;
-	  const newRows = stockholdersData.map((row, index) => {
-      if (index === ind) {
-        return { ...row, [name]: value };
+	  const newRows = stockholdersData.map((oldRow) => {
+      if (oldRow.uniqueId === row.uniqueId) {
+        return { ...oldRow, [name]: value };
       }
-      return row;
+		  return oldRow;
     });
 
     setStockholdersData(newRows);
   };
+
+	const handleRequestSort = (event, property) => {
+		const isAsc = orderBy === property && order === 'asc';
+		setOrder(isAsc ? 'desc' : 'asc');
+		setOrderBy(property);
+	}
+
+	const handleStockSort = (event, property, row, persist) => {
+		const clonedRow = JSON.parse(JSON.stringify(stockholdersData));
+		const isAsc = row.orderBy === property && row.order === 'asc';
+
+		const tempRowIndex = clonedRow.findIndex(f => f.uniqueId === row.uniqueId);
+		clonedRow[tempRowIndex].order = isAsc ? 'desc' : 'asc';
+		clonedRow[tempRowIndex].orderBy = property;
+
+		if(persist){
+			const updated = stableSort(clonedRow, getComparator(order, orderBy))
+			setStockholdersData(updated);
+		} else {
+			setStockholdersData(clonedRow);
+		}
+	}
+
+
+	const stableSort = (arr, comp) => {
+		if(arr.some(s => s.isEditMode)) return arr;
+		
+		let stabilized = arr.map((el, ind) => [el, ind]);
+
+		stabilized.sort((a, b) => {
+			const order = comp(a[0], b[0]);
+			if (order !== 0) {
+				return order;
+			}
+			return a[1] - b[1];
+		});
+
+		// Sort the subarrays.
+
+			const subStabilized = stabilized.map((elem, ind) => {
+				
+				const subComp = getComparator(elem[0].order, elem[0].orderBy);
+
+				const stabilizedStocks = elem[0].stocks ? elem[0].stocks.map((stock, ind) => [stock, ind]) : [];
+
+				stabilizedStocks.sort((a, b) => {
+					const order = subComp(a[0], b[0]);
+					if(order !== 0){
+						return order;
+					}
+					return a[1] - b[1];
+				});
+
+				const newElem = JSON.parse(JSON.stringify(elem));
+
+				if(newElem[ind].stocks){
+					newElem[ind].stocks = stabilizedStocks.map((el) => el[0]);
+				}
+
+				return newElem;
+			})
+
+
+		return subStabilized.map((el) => el[0]);
+	}
 
 	return (
 
@@ -198,25 +339,28 @@ export const Dashboard = (props) => {
 			<Grid container spacing={0}>
 				<Grid item md={4}>
 					<Paper className={classes.root}>
+						{/*Toolbar goes here*/}
 						<Table 
 							aria-label="caption table">
-							<TableHead>
-					  			<TableRow>
-									<TableCell align="left" />
-									<TableCell align="left">Name</TableCell>
-									<TableCell align="left">Role</TableCell>
-					  			</TableRow>
-							</TableHead>
+							{/*Enhanced head goes here*/}
+							<EnhancedTableHead 
+								headCellsSet={headCells}
+								order={order}
+								orderBy={orderBy}
+								onRequestSort={handleRequestSort}
+								skipFirst={true}
+							/>
 							<TableBody>
-					  			{stockholdersData.map((row, ind) => (
-						  		<React.Fragment>
-						  			<TableRow key={ind}>
+					  			{stableSort(stockholdersData, getComparator(order, orderBy))
+										.map((row, ind) => (
+											<React.Fragment>
+						  			<TableRow key={row.uniqueId}>
 							  			<TableCell className={classes.selectTableCell}>
 											{row.isEditMode ? (
 							  			<>
 											<IconButton
 												aria-label="done"
-												onClick={() => onToggleEditMode(ind)}
+												onClick={() => onToggleEditMode(row.uniqueId)}
 											>
 								  				<DoneIcon />
 											</IconButton>
@@ -224,14 +368,14 @@ export const Dashboard = (props) => {
 										) : (
 											<IconButton
 												aria-label="delete"
-												onClick={() => onToggleEditMode(ind)}
+												onClick={() => onToggleEditMode(row.uniqueId)}
 										  	>
 												<EditIcon />
 							  				</IconButton>
 										)}
 						  				</TableCell>
-										<CustomTableCell {...{ row, name: "name", onChange, ind }} />
-										<CustomRoleTableCell {...{ row, name: "role", onChange, ind }} />
+										<CustomTableCell {...{ row, name: "name", onChange}} />
+										<CustomRoleTableCell {...{ row, name: "role", onChange }} />
 										<TableCell>
 										<IconButton
 											size="small"
@@ -256,14 +400,15 @@ export const Dashboard = (props) => {
 											Stocks
 											</Typography>
 											<Table size="small">
-											<TableHead>
-												<TableRow>
-													<TableCell>Title</TableCell>
-													<TableCell>Count</TableCell>
-													<TableCell>Value</TableCell>
-													<TableCell>Date</TableCell>
-												</TableRow>
-											</TableHead>
+												<EnhancedTableHead 
+													headCellsSet={headStockCells}
+													order={order}
+													orderBy={orderBy}
+													onRequestSort={handleStockSort}
+													skipFirst={false}
+													stockholderRow={row}
+													type={'stock'}
+												/>
 											<TableBody>
 												{!row.isEditMode ? 
 													row.stocks.map((stockRow, stockInd) => (
@@ -351,8 +496,13 @@ export const Dashboard = (props) => {
 		</Table>
 	</Paper>
 </Grid>
-		<Grid item md={1}></Grid>
-				<Grid container item md={7}>
+		<Grid 
+			item 
+			md={1}></Grid>
+			<Grid 
+				container 
+				item 
+				md={7}>
 
 			<Grid item component={VictoryPie}
 				md={9}
@@ -360,7 +510,9 @@ export const Dashboard = (props) => {
 				colorScale="qualitative"
 				data={categoryToggleOn ? ownershipData.category : ownershipData.individual}
 			/>
-				<Grid item component="section"
+				<Grid 
+					item 
+					component="section"
 					md={3}>
 					<h3>Options</h3>
 				<span>Show graph by role</span>
