@@ -125,7 +125,7 @@ const CustomRoleTableCell = ({ row, name, onChange}) => {
 				<TableRow>
 					<React.Fragment>
 
-						{ skipFirst ? <TableCell></TableCell> : null}
+						{ skipFirst ? <TableCell key="blank"></TableCell> : null}
 					{
 						headCellsSet.map((headCell) => (
 							<TableCell
@@ -248,9 +248,9 @@ export const Dashboard = (props) => {
 		setStockholdersData(tempStockholders);
 	}
 
-	const setRowOpen = (ind, val) => {
+	const setRowOpen = (row, val) => {
 		const newRows = [...stockholdersData];
-		newRows[ind].isRowOpen = val;
+		newRows.find(f => f.uniqueId === row.uniqueId).isRowOpen = val;
 		setStockholdersData(newRows);
 	}
 
@@ -336,8 +336,6 @@ export const Dashboard = (props) => {
 		return subStabilized.map((el) => el[0]);
 	}
 
-	console.log(stockholdersData);
-
 	return (
 
 		<section className="dashboard">
@@ -359,7 +357,7 @@ export const Dashboard = (props) => {
 							<TableBody>
 					  			{stableSort(stockholdersData, getComparator(order, orderBy))
 										.map((row, ind) => (
-											<React.Fragment>
+											<React.Fragment key={row.uniqueId}>
 						  			<TableRow key={row.uniqueId}>
 							  			<TableCell className={classes.selectTableCell}>
 											{row.isEditMode ? (
@@ -388,7 +386,7 @@ export const Dashboard = (props) => {
 										<TableCell>
 										<IconButton
 											size="small"
-											onClick={() => setRowOpen(ind, !row.isRowOpen)}
+											onClick={() => setRowOpen(row, !row.isRowOpen)}
 										>
 											{row.isRowOpen ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
 										</IconButton>
@@ -471,7 +469,7 @@ export const Dashboard = (props) => {
 											</TableRow>))
 											}
 											<TableRow>
-												<TableCell colspan={6}>
+												<TableCell colSpan={6}>
 													<Box 
 														component={Button} 
 														width="100%"
@@ -490,7 +488,7 @@ export const Dashboard = (props) => {
 					</React.Fragment>
 					))}
 					<TableRow>
-					<TableCell colspan={6}>
+					<TableCell colSpan={6}>
 						<Box 
 							component={Button} 
 							width="100%"
@@ -509,13 +507,13 @@ export const Dashboard = (props) => {
 			item 
 			md={1}></Grid>
 			<Grid 
+				className="dashboard-details"
 				container 
 				item 
 				md={7}
-			display="flex"
-			flexDirection="column"
+				display="flex"
 				alignItems="center"
-				justifyContent="center">
+			>
 
 				<h3 
 					className="graph-title" 
@@ -524,9 +522,11 @@ export const Dashboard = (props) => {
 
 				<Grid container item md={12}>
 
-			<Grid item component={VictoryPie}
+			<Grid 
+				item 
+				component={VictoryPie}
 				md={9}
-				containerComponent={<VictoryContainer responsive={false}/> }
+				containerComponent={<VictoryContainer responsive={false} className="graph-container"/> }
 				colorScale="qualitative"
 				data={categoryToggleOn ? ownershipData.category : ownershipData.individual}
 				innerRadius={40}
@@ -553,16 +553,18 @@ export const Dashboard = (props) => {
 							}, {
 								target: "labels",
 								mutation: (props) => {
-									const {text} = props;
+									const { style } = props;
+									style.fontSize = 14;
+
 									if(!categoryToggleOn){
 										const data = stockholdersData.find(f => f.uniqueId === props.datum.uniqueId);
-										return { toggled: true, text: `${props.datum.x}\n ${(100 * data.percentOwnership).toFixed(2)}% ownership` }
+										return { toggled: true, text: `${props.datum.x}\n ${(100 * data.percentOwnership).toFixed(2)}% ownership`, style }
 										
 									}
 									else {
 										const total = props.data.reduce((acc, val) => acc + val.y, 0)
 										const percent = ((100 * props.datum.y / total).toFixed(2));
-										return props.toggled ? null : { toggled: true, text: `${percent} % ownership\n by ${props.datum.x}s` }
+										return props.toggled ? null : { toggled: true, text: `${percent} % ownership\n by ${props.datum.x}s`, style }
 
 									}
 								}
@@ -589,12 +591,14 @@ export const Dashboard = (props) => {
 				<Grid 
 					item 
 					component="section"
-					md={3}>
+					md={3}
+					className="options-container"
+				>
 					<h3>Options</h3>
 				<span>show by role</span>
 				<Switch 
 					checked={categoryToggleOn}
-					onChange={togglePieChart}
+					onClick={togglePieChart}
 				/>
 			</Grid>
 				</Grid>

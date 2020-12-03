@@ -24,6 +24,7 @@ export const getStockholderData = createAsyncThunk('stockholders/getStockholderD
 
 export const updateStockRow = createAsyncThunk('stockHolders/updateStocks', async(row) => {
 	row.isEditMode = false;
+	console.log(row);
 	const response = await Api.updateStockRow('stockholderdata', row);
 	return calculateOwnership(response);
 });
@@ -59,6 +60,7 @@ export const stockholderSlice = createSlice({
 		},
 		[updateStockRow.fulfilled]: (state, action) => {
 			const { ownerShipData, fullUserData } = action.payload;
+			console.log(action.payload);
 			state.stockholders = state.stockholders.concat(fullUserData);
 			state.ownership = ownerShipData;
 		}

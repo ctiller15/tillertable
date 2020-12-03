@@ -91,13 +91,27 @@
 }
 
 .App .dashboard {
+	min-height: 600px;
 	flex-grow: 1;
+}
+
+.App .dashboard .dashboard-details {
+	position: fixed;
+	right: 0;
 }
 
 .App .dashboard .graph-title {
 	display: inline-block;
 	width: 100%;
 	text-align: center;
+}
+
+.App .dashboard .graph-container {
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.App .dashboard .options-container {
+	border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-reduced-motion: no-preference) {

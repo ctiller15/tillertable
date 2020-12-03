@@ -6,7 +6,6 @@ const roles = {
 
 export const calculateOwnership = (payload) => {
 	let ownershipTotal = 0;
-	console.log(payload);
 	const updatedUserData = payload.fullUserData ? [...payload.fullUserData] : [...payload];
 
 	const ownerShipData = {
