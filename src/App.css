@@ -55,6 +55,7 @@
 }
 
 .App .footer {
+	margin-top: 2em;
 	height: 100px;
 	background-color: rgb(40, 40, 40);
 	color: #FFFFFF;
@@ -91,6 +92,12 @@
 
 .App .dashboard {
 	flex-grow: 1;
+}
+
+.App .dashboard .graph-title {
+	display: inline-block;
+	width: 100%;
+	text-align: center;
 }
 
 @media (prefers-reduced-motion: no-preference) {

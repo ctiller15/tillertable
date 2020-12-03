@@ -5,12 +5,17 @@ import { selectStockHolders, selectOwnership, addStockholderAsync, getStockholde
 import { Table, TableBody, TableCell, TableHead, TableRow, Paper, Grid, Switch, Collapse, Typography, IconButton, Button, Box, TextField, Select, MenuItem, Input, TableSortLabel } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { VictoryPie, VictoryContainer } from 'victory';
+import { VictoryPie, VictoryContainer, VictoryTheme } from 'victory';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 
 // Icons
 import EditIcon from "@material-ui/icons/EditOutlined";
 import DoneIcon from "@material-ui/icons/DoneAllTwoTone";
+
+// Credit given to superspan over on https://stackoverflow.com/a/57401891/9028073
+function adjust(color, amount) {
+    return '#' + color.replace(/^#/, '').replace(/../g, color => ('0'+Math.min(255, Math.max(0, parseInt(color, 16) + amount)).toString(16)).substr(-2));
+}
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -506,25 +511,93 @@ export const Dashboard = (props) => {
 			<Grid 
 				container 
 				item 
-				md={7}>
+				md={7}
+			display="flex"
+			flexDirection="column"
+				alignItems="center"
+				justifyContent="center">
+
+				<h3 
+					className="graph-title" 
+					component='h3'>Ownership by {categoryToggleOn ? 'Role' : 'Individual'}</h3>
+				<hr />
+
+				<Grid container item md={12}>
 
 			<Grid item component={VictoryPie}
 				md={9}
 				containerComponent={<VictoryContainer responsive={false}/> }
 				colorScale="qualitative"
 				data={categoryToggleOn ? ownershipData.category : ownershipData.individual}
+				innerRadius={40}
+				width={550}
+				height={400}
+				theme={VictoryTheme.material}
+				events={[{
+					target: "data",
+						eventHandlers: {
+							// Other things that could be done here:
+							// When a section of the graph is clicked, automatically go to the
+							// Corresponding section in the table.
+							// On hover, also highlight the
+							// Corresponding section on the table
+							onMouseOver: () => {
+								return [
+									{
+										target: "data",
+										mutation: ( props ) => {
+											const { style } = props;
+											return  {
+												style: { fill: adjust(style.fill, 40), stroke: style.stroke, padding: style.padding, toggled: true } };
+											}
+							}, {
+								target: "labels",
+								mutation: (props) => {
+									const {text} = props;
+									if(!categoryToggleOn){
+										const data = stockholdersData.find(f => f.uniqueId === props.datum.uniqueId);
+										return { toggled: true, text: `${props.datum.x}\n ${(100 * data.percentOwnership).toFixed(2)}% ownership` }
+										
+									}
+									else {
+										const total = props.data.reduce((acc, val) => acc + val.y, 0)
+										const percent = ((100 * props.datum.y / total).toFixed(2));
+										return props.toggled ? null : { toggled: true, text: `${percent} % ownership\n by ${props.datum.x}s` }
+
+									}
+								}
+							}
+								];
+							},
+								onMouseOut: () => {
+									return [{
+										target: "data",
+										mutation: () => {
+											return null;
+										}
+									},{
+										target: "labels",
+										mutation: () => {
+											return null;
+										}
+									}
+									]
+								}
+						}
+				}]}
 			/>
 				<Grid 
 					item 
 					component="section"
 					md={3}>
 					<h3>Options</h3>
-				<span>Show graph by role</span>
+				<span>show by role</span>
 				<Switch 
 					checked={categoryToggleOn}
 					onChange={togglePieChart}
 				/>
 			</Grid>
+				</Grid>
 		</Grid>
 	</Grid>
 </section>
