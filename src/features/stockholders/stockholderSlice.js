@@ -50,8 +50,8 @@ export const stockholderSlice = createSlice({
 			state.ownership = ownerShipData;
 		},
 		[addStockholderAsync.fulfilled]: (state, action) => {
-			const { ownerShipData, fullUserData } = calculateOwnership(action.payload);
-			state.stockholders = state.stockholders.concat(fullUserData);
+			state.stockholders = state.stockholders.concat(action.payload);
+			const { ownerShipData, fullUserData } = calculateOwnership(state.stockholders);
 			state.ownership = ownerShipData;
 		},
 		[addStockAsync.fulfilled]: (state, action) => {

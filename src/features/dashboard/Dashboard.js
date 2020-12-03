@@ -378,7 +378,7 @@ export const Dashboard = (props) => {
 										<CustomTableCell {...{ row, name: "name", onChange}} />
 										<CustomRoleTableCell {...{ row, name: "role", onChange }} />
 										<TableCell>
-											{row.percentOwnership}
+											{row.percentOwnership.toFixed(4) * 100} %
 										</TableCell>
 										<TableCell>
 										<IconButton
