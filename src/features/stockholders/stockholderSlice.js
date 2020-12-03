@@ -19,13 +19,13 @@ export const addStockAsync = createAsyncThunk('stockHolders/addStock', async (in
 
 export const getStockholderData = createAsyncThunk('stockholders/getStockholderData', async () => {
 	const response = await Api.get('stockholderdata');
-	return response;
+	return calculateOwnership(response);
 });
 
 export const updateStockRow = createAsyncThunk('stockHolders/updateStocks', async(row) => {
 	row.isEditMode = false;
 	const response = await Api.updateStockRow('stockholderdata', row);
-	return response;
+	return calculateOwnership(response);
 });
 
 export const stockholderSlice = createSlice({
@@ -39,23 +39,28 @@ export const stockholderSlice = createSlice({
 	extraReducers: {
 		// Todo: more data munging. Need to be able to have the totals, as well as the total per user.
 		[saveStockholdersAsync.fulfilled]: (state, action) => {
-			state.stockholders = state.stockholders.concat(action.payload);
-			state.ownership = calculateOwnership(action.payload);
+			const { ownerShipData, fullUserData } = calculateOwnership(action.payload);
+			state.stockholders = state.stockholders.concat(fullUserData);
+			state.ownership = ownerShipData;
+			return fullUserData;
 		},
 		[getStockholderData.fulfilled]: (state, action) => {
-			state.stockholders = state.stockholders.concat(action.payload);
-			state.ownership = calculateOwnership(action.payload);
+			const { ownerShipData, fullUserData } = action.payload;
+			state.stockholders = state.stockholders.concat(fullUserData);
+			state.ownership = ownerShipData;
 		},
 		[addStockholderAsync.fulfilled]: (state, action) => {
-			state.stockholders = state.stockholders.concat(action.payload);
-			state.ownership = calculateOwnership(state.stockholders);
+			const { ownerShipData, fullUserData } = calculateOwnership(action.payload);
+			state.stockholders = state.stockholders.concat(fullUserData);
+			state.ownership = ownerShipData;
 		},
 		[addStockAsync.fulfilled]: (state, action) => {
 			state.stockholders[action.payload.ind].stocks.push(action.payload.response);		
 		},
 		[updateStockRow.fulfilled]: (state, action) => {
-			state.stockholders = action.payload;
-			state.ownership = calculateOwnership(action.payload);
+			const { ownerShipData, fullUserData } = action.payload;
+			state.stockholders = state.stockholders.concat(fullUserData);
+			state.ownership = ownerShipData;
 		}
 	}
 });

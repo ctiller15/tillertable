@@ -61,16 +61,15 @@ const CustomRoleTableCell = ({ row, name, onChange}) => {
 		<TableCell 
 			align="left">
 		  {isEditMode ? (
-							<Select 
-								value={row.role}
-								name={name}
-								onChange={e => onChange(e, row)}
-								className={classes.input}
-						>
-								<MenuItem value="founder">Founder</MenuItem>
-								<MenuItem value="investor">Investor</MenuItem>
-								<MenuItem value="employee">Employee</MenuItem>
-							</Select>
+				<Select 
+					value={row.role}
+					name={name}
+					onChange={e => onChange(e, row)}
+					className={classes.input}>
+					<MenuItem value="founder">Founder</MenuItem>
+					<MenuItem value="investor">Investor</MenuItem>
+					<MenuItem value="employee">Employee</MenuItem>
+				</Select>
 		  ) : row.role }
 			
 		</TableCell>
@@ -79,7 +78,8 @@ const CustomRoleTableCell = ({ row, name, onChange}) => {
 
 	const headCells = [
 		{ id: 'name', numeric: false, label: 'Name'},
-		{ id: 'role', numeric: false, label: 'Role'}
+		{ id: 'role', numeric: false, label: 'Role'},
+		{ id: 'percentOwnership', numeric: true, label: 'Ownership %'}
 	];
 
 	const headStockCells = [
@@ -90,7 +90,6 @@ const CustomRoleTableCell = ({ row, name, onChange}) => {
 	];
 
 	const descendingComparator = (a, b, orderBy) => {
-		console.log(a, b, orderBy, a[orderBy], b[orderBy]);
 		if (b[orderBy] < a[orderBy]) {
 			return -1;
 		}
@@ -150,8 +149,8 @@ export const Dashboard = (props) => {
 	const [ previous, setPrevious ] = React.useState({});
 	const [ categoryToggleOn, toggleCategory ] = useState(false)
 
-	const [ order, setOrder] = React.useState('asc');
-	const [ orderBy, setOrderBy] = React.useState('name');
+	const [ order, setOrder] = React.useState('desc');
+	const [ orderBy, setOrderBy] = React.useState('percentOwnership');
 
 	const dispatch = useDispatch();
 
@@ -189,7 +188,7 @@ export const Dashboard = (props) => {
 		async function fetchData() {
 		const response = await dispatch(getStockholderData())
 
-		const fetchedStockholders = response.payload.map((item) => (
+			const fetchedStockholders = response.payload.fullUserData.map((item) => (
 			{
 				...item,
 				isEditMode: false,
@@ -214,7 +213,7 @@ export const Dashboard = (props) => {
 
 	const updateStockholdersRow = async (row) => {
 		const response = await dispatch(updateStockRow(row));
-		setStockholdersData(stableSort(response.payload, getComparator(order, orderBy)));
+		setStockholdersData(stableSort(response.payload.fullUserData, getComparator(order, orderBy)));
 	}
 
 	const addStockholderTableRow = async (e) => {
@@ -321,7 +320,7 @@ export const Dashboard = (props) => {
 
 				const newElem = JSON.parse(JSON.stringify(elem));
 
-				if(newElem[ind].stocks){
+				if(newElem[ind] && newElem[ind].stocks){
 					newElem[ind].stocks = stabilizedStocks.map((el) => el[0]);
 				}
 
@@ -331,6 +330,8 @@ export const Dashboard = (props) => {
 
 		return subStabilized.map((el) => el[0]);
 	}
+
+	console.log(stockholdersData);
 
 	return (
 
@@ -377,6 +378,9 @@ export const Dashboard = (props) => {
 										<CustomTableCell {...{ row, name: "name", onChange}} />
 										<CustomRoleTableCell {...{ row, name: "role", onChange }} />
 										<TableCell>
+											{row.percentOwnership}
+										</TableCell>
+										<TableCell>
 										<IconButton
 											size="small"
 											onClick={() => setRowOpen(ind, !row.isRowOpen)}
@@ -388,7 +392,7 @@ export const Dashboard = (props) => {
 								<TableRow>
 									<TableCell 
 										style={{ paddingBottom: 0, paddingTop: 0 }} 
-										colspan={6}>
+										colSpan={6}>
 										<Collapse 
 											in={row.isRowOpen} 
 											timeout="auto" 

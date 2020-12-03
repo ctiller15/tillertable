@@ -5,6 +5,10 @@ const roles = {
 }
 
 export const calculateOwnership = (payload) => {
+	let ownershipTotal = 0;
+	console.log(payload);
+	const updatedUserData = payload.fullUserData ? [...payload.fullUserData] : [...payload];
+
 	const ownerShipData = {
 		category: [],
 		individual: [],
@@ -25,16 +29,27 @@ export const calculateOwnership = (payload) => {
 
 	// now to calculate each ownership for a given user.
 	
+
 	const individualOwnership = payload.map((person) => {
 		const ownershipValue = person.stocks.reduce((acc, val) => {
 			return acc + Number(val.count) * Number(val.value);
 		}, 0);
 
-		return {x: person.name, y: ownershipValue}
+		ownershipTotal += ownershipValue;
+
+		return {x: person.name, y: ownershipValue, uniqueId: person.uniqueId}
 	})
+
+	const fullUserData = updatedUserData.map(m => {
+		const ownershipValue = individualOwnership.find(f => f.uniqueId === m.uniqueId).y
+
+		return {...m, percentOwnership: ownershipValue/ownershipTotal}
+	});
 
 	ownerShipData.individual = individualOwnership;
 
-	return ownerShipData;
+	const returned = {ownerShipData, fullUserData}
+
+	return returned;
 }
 
